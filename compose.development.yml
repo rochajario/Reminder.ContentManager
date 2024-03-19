@@ -1,0 +1,35 @@
+version: '3.4'
+
+networks:
+  default:
+    driver: bridge
+
+services:
+  content-manager-api:
+    extends:
+      file: ./docker-compose.yml
+      service: contentmanager.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings:Database=server=${DB_HOST};database=ContentManagement;user=${DB_USER};password=${DB_PASSWORD}
+      - ConnectionStrings:RabbitMQ=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@RabbitMQ:5672/
+      - JwtKey=${JWT_KEY}
+      
+  content-manager-ws:
+    extends:
+      file: ./docker-compose.yml
+      service: contentmanager.worker
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - ConnectionStrings:Database=server=${DB_HOST};database=ContentManagement;user=${DB_USER};password=${DB_PASSWORD}
+      - ConnectionStrings:RabbitMQ=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@RabbitMQ:5672/
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: RabbitMQ
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    ports:
+      - "5672:5672"
+      - "15672:15672"

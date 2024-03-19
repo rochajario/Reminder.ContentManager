@@ -1,0 +1,19 @@
+version: '3.4'
+
+services:
+  contentmanager.api:
+    image: remindme-content_manager_api
+    container_name: ContentManager-API
+    build:
+      context: .
+      dockerfile: ContentManager.Api/Dockerfile
+    environment:
+      - ASPNETCORE_HTTP_PORTS=8080
+
+  contentmanager.worker:
+    image: remindme-content_manager_worker
+    container_name: ContentManager-WS
+    build:
+      context: .
+      dockerfile: ContentManager.Worker/Dockerfile
+
